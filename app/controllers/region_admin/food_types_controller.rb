@@ -1,11 +1,11 @@
-class FoodTypesController < ApplicationController
+class RegionAdmin::FoodTypesController < ApplicationController
   before_filter :authenticate_volunteer!
 
   def index
     @food_types = FoodType.accessible_by(current_ability)
     respond_to do |format|
+      format.html
       format.json { render json: @food_types.to_json }
-      format.html { render :index }
     end
   end
 
