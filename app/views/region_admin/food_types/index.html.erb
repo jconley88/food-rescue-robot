@@ -26,7 +26,7 @@
             <%= food_type.name %>
           </td>
           <td>
-            <%= food_type.region.name %>
+            <%= food_type.region.try(:name) %>
           </td>
           <td>
             <%= link_to 'Edit', edit_region_admin_food_type_url(food_type) %><br>

@@ -1,7 +1,22 @@
-<%= form_for @food_type, :url => {:action => @action } do |f| %>
-<table>
-<%= hidden_field_tag "food_type[region_id]", @food_type.region_id %>
-<tr><td>Name<td><%= f.text_field(:name) %>
-</table>
-<%= submit_tag %>
+<%= form_for [:region_admin, @food_type] do |f| %>
+  <table class="table table-striped">
+    <tr>
+      <th>
+        <%= f.label :region %>
+      </th>
+      <td>
+        <%= f.select :region_id, @available_regions.map{|r| [r.name, r.id]} %>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <%= f.label :name %>
+      </th>
+      <td>
+        <%= f.text_field :name %>
+      </td>
+    </tr>
+  </table>
+
+  <%= f.submit %>
 <% end %>
