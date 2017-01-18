@@ -19,54 +19,62 @@ class RegionAdmin::FoodTypesController < ApplicationController
   end
 
   def create
-    @food_type = FoodType.new(params[:food_type])
-    authorize! :create, @food_type
+    context = RegionAdmin::CreateFoodType.call(
+      volunteer: current_volunteer,
+      params:    params[:food_type]
+    )
 
-    if @food_type.save
+    if context.success?
       flash[:notice] = "Created successfully."
-      unless session[:my_return_to].nil?
-        redirect_to session[:my_return_to] 
-      else
-        redirect_to region_admin_food_types_url
-      end
+      redirect_to session[:my_return_to].presence || region_admin_food_types_url
     else
-      flash[:notice] = "Didn't save successfully :("
+      @food_type         = context.food_type
+      @available_regions = available_regions
+
+      flash.now[:alert] = "There were errors saving the Food Type."
       render :new
     end
   end
 
   def edit
-    @food_type = FoodType.find(params[:id])
+    @food_type         = FoodType.find(params[:id])
     @available_regions = available_regions
 
-    authorize! :update, @food_type
+    authorize!(:update, @food_type)
 
     session[:my_return_to] = request.referer
   end
 
   def update
-    @food_type = FoodType.find(params[:id])
+    context = RegionAdmin::UpdateFoodType.call(
+      volunteer:    current_volunteer,
+      food_type_id: params[:id],
+      params:       params[:food_type]
+    )
 
-    authorize! :update, @food_type
-
-    if @food_type.update_attributes(params[:food_type])
-      flash[:notice] = "Updated Successfully."
-      unless session[:my_return_to].nil?
-        redirect_to(session[:my_return_to])
-      else
-        redirect_to region_admin_food_types_url
-      end
+    if context.success?
+      flash[:notice] = "Updated successfully."
+      redirect_to session[:my_return_to].presence || region_admin_food_types_url
     else
-      flash[:error] = "Update failed :("
+      @food_type = context.food_type
+
+      flash.now[:alert] = "There were errors saving the Food Type."
       render :edit
     end
   end
 
   def destroy
-    @l = FoodType.find(params[:id])
-    authorize! :destroy, @l
-    @l.active = false
-    @l.save
+    context = RegionAdmin::DeleteFoodType.call(
+      volunteer:    current_volunteer,
+      food_type_id: params[:id]
+    )
+
+    if context.success?
+      flash[:notice] = "Deleted successfully."
+    else
+      flash[:alert] = "There were errors deleting the Food Type."
+    end
+
     redirect_to(request.referrer)
   end
 
@@ -76,7 +84,7 @@ class RegionAdmin::FoodTypesController < ApplicationController
     if current_volunteer.super_admin?
       FoodType.active
     else
-      FoodType.active.regional(current_volunteer.region_ids)
+      FoodType.active.regional(available_regions.map(&:id))
     end
   end
 
@@ -90,10 +98,14 @@ class RegionAdmin::FoodTypesController < ApplicationController
 
   def authorize_region_admin!
     return if region_admin?
-    redirect_to root_url, alert: "Unauthorized"
+    redirect_unauthorized
   end
 
   def region_admin?
     current_volunteer.any_admin?
+  end
+
+  def redirect_unauthorized
+    redirect_to root_url, alert: "Unauthorized"
   end
 end

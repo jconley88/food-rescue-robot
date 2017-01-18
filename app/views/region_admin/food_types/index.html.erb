@@ -1,10 +1,7 @@
 <h2>Food Types</h2>
 
 <div style="text-align: right;">
-  <%= form_tag(new_region_admin_food_type_url, :method => "get") do %>
-    New Food Type For <%= select_tag(:region_id, options_for_select(Region.all_admin(current_volunteer).collect{ |r| [r.name,r.id] })) %>
-    <%= submit_tag("Go") %>
-  <% end %>
+  <%= link_to "New Food Type", new_region_admin_food_type_url, class: "btn btn-primary" %>
 </div>
 
 <% if @food_types.empty? %>
