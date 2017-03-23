@@ -399,14 +399,14 @@ class LogsController < ApplicationController
       lpdata['weight'] = nil if lpdata['weight'].strip == ''
       lpdata['count'] = nil if lpdata['count'].strip == ''
       next if lpdata['id'].nil? and lpdata['weight'].nil? and lpdata['count'].nil?
-      lp = lpdata['id'].nil? ? LogPart.new : LogPart.find(lpdata['id'].to_i)
-      lp.count = lpdata['count']
-      lp.description = lpdata['description']
-      lp.food_type_id = lpdata['food_type_id'].to_i
-      lp.log_id = log.id
-      lp.weight = lpdata['weight'].to_f
-      ret.push lp
-      lp.save
+      log_part = lpdata['id'].nil? ? LogPart.new : LogPart.find(lpdata['id'].to_i)
+      log_part.count = lpdata['count']
+      log_part.description = lpdata['description']
+      log_part.food_type_id = lpdata['food_type_id'].to_i
+      log_part.log_id = log.id
+      log_part.weight = lpdata['weight'].to_f
+      ret.push log_part
+      log_part.save
     } unless params['log_parts'].nil?
     ret
   end
