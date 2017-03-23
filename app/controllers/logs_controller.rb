@@ -416,9 +416,9 @@ class LogsController < ApplicationController
     filled_count = 0
     required_unfilled = 0
 
-    log.log_parts.each{ |lp|
-      required_unfilled += 1 if lp.required && lp.weight.nil? && lp.count.nil?
-      filled_count += 1 unless lp.weight.nil? && lp.count.nil?
+    log.log_parts.each{ |log_part|
+      required_unfilled += 1 if log_part.required && log_part.weight.nil? && log_part.count.nil?
+      filled_count += 1 unless log_part.weight.nil? && log_part.count.nil?
     }
     log.complete = filled_count > 0 && required_unfilled == 0
   end
