@@ -136,9 +136,9 @@ class LogsController < ApplicationController
   end
 
   def destroy
-    @l = Log.find(params[:id])
-    authorize! :destroy, @l
-    @l.destroy
+    @log = Log.find(params[:id])
+    authorize! :destroy, @log
+    @log.destroy
     redirect_to(request.referrer)
   end
 
