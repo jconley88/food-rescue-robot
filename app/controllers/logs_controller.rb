@@ -105,14 +105,14 @@ class LogsController < ApplicationController
       render :text => total.to_s
     when 'wordcloud'
       words = {}
-      LogPart.select('description').where('description IS NOT NULL').each{ |l|
-        l.description.strip.split(/\s*\,\s*/).each{ |w|
-          w = w.strip.downcase.tr(',', '')
-          next if w =~ /(nothing|no |none)/ or w =~ /etc/ or w =~ /n\/a/ or w =~ /misc/
+      LogPart.select('description').where('description IS NOT NULL').each{ |log_part|
+        log_part.description.strip.split(/\s*\,\s*/).each{ |word|
+          word = word.strip.downcase.tr(',', '')
+          next if word =~ /(nothing|no |none)/ or word =~ /etc/ or word =~ /n\/a/ or word =~ /misc/
           # people cannot seem to spell the most delicious fruit correctly
-          w = 'avocados' if w == 'avacados' or w == 'avocadoes' or w == 'avocado'
-          words[w] = 0 if words[w].nil?
-          words[w] += 1
+          word = 'avocados' if word == 'avacados' or word == 'avocadoes' or word == 'avocado'
+          words[word] = 0 if words[word].nil?
+          words[wotd] += 1
         }
       }
       render :text => words.collect{ |k, v| (v >= 10) ? "#{k}:#{v}" : nil }.compact.join(',')
