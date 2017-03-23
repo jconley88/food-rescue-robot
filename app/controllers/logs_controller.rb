@@ -95,14 +95,14 @@ class LogsController < ApplicationController
     case params[:what]
     when 'poundage'
       if params[:region_id].nil?
-        t = LogPart.sum(:weight) + Region.where('prior_lbs_rescued IS NOT NULL').sum('prior_lbs_rescued')
+        total = LogPart.sum(:weight) + Region.where('prior_lbs_rescued IS NOT NULL').sum('prior_lbs_rescued')
       else
-        r = params[:region_id]
-        @region = Region.find(r)
-        t = Log.joins(:log_parts).where('region_id = ? AND complete', r).sum('weight').to_f
-        t += @region.prior_lbs_rescued.to_f unless @region.nil? or @region.prior_lbs_rescued.nil?
+        region_id = params[:region_id]
+        @region = Region.find(region_id)
+        total = Log.joins(:log_parts).where('region_id = ? AND complete', region_id).sum('weight').to_f
+        total += @region.prior_lbs_rescued.to_f unless @region.nil? or @region.prior_lbs_rescued.nil?
       end
-      render :text => t.to_s
+      render :text => total.to_s
     when 'wordcloud'
       words = {}
       LogPart.select('description').where('description IS NOT NULL').each{ |l|
