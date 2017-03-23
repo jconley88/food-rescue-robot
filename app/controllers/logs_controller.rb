@@ -283,19 +283,19 @@ class LogsController < ApplicationController
 
   # can be given a single id or a list of ids
   def leave
-    l = unless params[:ids].present?
+    logs = unless params[:ids].present?
           [Log.find(params[:id])]
         else
-          params[:ids].collect{ |i| Log.find(i) }
+          params[:ids].collect{ |id| Log.find(id) }
         end
 
-    l.each { |log| authorize! :leave, log }
+    logs.each { |log| authorize! :leave, log }
 
-    l.each do |x|
-      if x.has_volunteer? current_volunteer
-        LogVolunteer.where(:volunteer_id=>current_volunteer.id, :log_id=>x.id).each{ |lv|
-          lv.active = false
-          lv.save
+    logs.each do |log|
+      if log.has_volunteer? current_volunteer
+        LogVolunteer.where(:volunteer_id=>current_volunteer.id, :log_id=>log.id).each{ |log_volunteer|
+          log_volunteer.active = false
+          log_volunteer.save
         }
       end
     end
