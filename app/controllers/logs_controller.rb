@@ -318,45 +318,45 @@ class LogsController < ApplicationController
       return redirect_to(request.referer || root_path)
     end
 
-    @loc = Location.find(params[:location_id])
+    @location = Location.find(params[:location_id])
 
-    authorize! :receipt, @loc
+    authorize! :receipt, @location
 
-    @logs = Log.where('logs.when >= ? AND logs.when <= ? AND donor_id = ? AND complete', @start_date, @stop_date, @loc.id)
+    @logs = Log.where('logs.when >= ? AND logs.when <= ? AND donor_id = ? AND complete', @start_date, @stop_date, @location.id)
 
     respond_to do |format|
       format.html
       format.pdf do
         pdf = Prawn::Document.new
         pdf.font_size 20
-        pdf.text @loc.region.title, :align => :center
+        pdf.text @location.region.title, :align => :center
 
-        unless @loc.region.tagline.nil?
+        unless @location.region.tagline.nil?
           pdf.move_down 10
           pdf.font_size 12
-          pdf.text @loc.region.tagline, :align => :center
+          pdf.text @location.region.tagline, :align => :center
         end
 
-        unless @loc.region.address.nil?
+        unless @location.region.address.nil?
           pdf.font_size 10
           pdf.font 'Times-Roman'
           pdf.move_down 10
-          pdf.text "#{@loc.region.address.tr("\n", ', ')}", :align => :center
+          pdf.text "#{@location.region.address.tr("\n", ', ')}", :align => :center
         end
 
-        unless @loc.region.website.nil?
+        unless @location.region.website.nil?
           pdf.move_down 5
-          pdf.text "#{@loc.region.website}", :align => :center
+          pdf.text "#{@location.region.website}", :align => :center
         end
-        unless @loc.region.phone.nil?
+        unless @location.region.phone.nil?
           pdf.move_down 5
-          pdf.text "#{@loc.region.phone}", :align => :center
+          pdf.text "#{@location.region.phone}", :align => :center
         end
         pdf.move_down 10
-        pdf.text "Federal Tax-ID: #{@loc.region.tax_id}", :align => :right
+        pdf.text "Federal Tax-ID: #{@location.region.tax_id}", :align => :right
         pdf.text "Receipt period: #{@start_date} to #{@stop_date}", :align => :left
         pdf.move_down 5
-        pdf.text "Receipt for: #{@loc.name}", :align => :center
+        pdf.text "Receipt for: #{@location.name}", :align => :center
         pdf.move_down 10
         pdf.font 'Helvetica'
         sum = 0.0
